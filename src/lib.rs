@@ -1,15 +1,14 @@
 use dirs::{cache_dir, config_dir};
-use serde_json::{json, Value};
+use serde_json::Value;
 use std::collections::HashMap;
 use std::error::Error;
-#[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 use std::process::Command;
 
 #[no_mangle]
 pub fn recognize(
     _base64: &str,
-    _lang: &str,
+    lang: &str,
     _needs: HashMap<String, String>,
 ) -> Result<Value, Box<dyn Error>> {
     let config_dir_path = config_dir().unwrap();
@@ -33,7 +32,10 @@ pub fn recognize(
 
     let output = cmd
         .current_dir(paddle_dir_path)
+        .arg("use_angle_cls=true")
+        .arg("cls=true")
         .arg(&format!("--image_path={}", image_path.to_str().unwrap()))
+        .arg(&format!("--config_path=models/config_{}.txt", lang))
         .output()?;
 
     let result = String::from_utf8_lossy(&output.stdout);
@@ -62,7 +64,7 @@ mod tests {
     #[test]
     fn try_request() {
         let needs = HashMap::new();
-        let result = recognize("", "", needs);
+        let result = recognize("", "chinese", needs);
         println!("{result:?}");
     }
 }

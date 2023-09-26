@@ -46,8 +46,8 @@ jobs:
       - name: extract-7z-action
         uses: DuckSoft/extract-7z-action@v1.0
         with:
-          pathSource: PaddleOCR-json_v.1.3.0.7z
-          pathTarget: PPOCR
+          pathSource: D:\a\pot-app-recognize-plugin-paddle\pot-app-recognize-plugin-paddle\PaddleOCR-json_v.1.3.0.7z
+          pathTarget: D:\a\pot-app-recognize-plugin-paddle\pot-app-recognize-plugin-paddle\PPOCR
       - name: Rename
         run: move target/${{ matrix.target }}/release/plugin.dll ./plugin.dll
       - uses: vimtor/action-zip@v1

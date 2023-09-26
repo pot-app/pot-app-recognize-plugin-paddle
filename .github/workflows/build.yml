@@ -41,7 +41,7 @@ jobs:
         run: cargo build --release --target ${{ matrix.target }}
       - name: Download PaddleOCR-json
         run: |
-          curl https://github.com/hiroi-sora/PaddleOCR-json/releases/download/v1.3.0/PaddleOCR-json_v.1.3.0.7z -o PaddleOCR-json_v.1.3.0.7z
+          powershell -c "invoke-webrequest -uri https://github.com/hiroi-sora/PaddleOCR-json/releases/download/v1.3.0/PaddleOCR-json_v.1.3.0.7z -outfile PaddleOCR-json_v.1.3.0.7z"
           mkdir PPOCR
       - name: Action 7z
         uses: edgarrc/action-7z@v1

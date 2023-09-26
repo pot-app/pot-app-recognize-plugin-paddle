@@ -1,10 +1,10 @@
 {
-  "id": "[plugin].com.pot-app.ocrspace",
+  "id": "[plugin].com.pot-app.paddle",
   "plugin_type": "recognize",
-  "icon": "icon.png",
-  "display": "OCR Space",
-  "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-template",
-  "needs": [{ "key": "apikey", "display": "Api Key" }],
+  "icon": "paddle.png",
+  "display": "Paddle OCR",
+  "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-paddle",
+  "needs": [],
   "language": {
     "auto": "",
     "zh_cn": "",

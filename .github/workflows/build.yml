@@ -43,11 +43,11 @@ jobs:
         run: |
           curl https://github.com/hiroi-sora/PaddleOCR-json/releases/download/v1.3.0/PaddleOCR-json_v.1.3.0.7z -o PaddleOCR-json_v.1.3.0.7z
           mkdir PPOCR
-      - name: extract-7z-action
-        uses: DuckSoft/extract-7z-action@v1.0
+      - name: Action 7z
+        uses: edgarrc/action-7z@v1
         with:
-          pathSource: D:\a\pot-app-recognize-plugin-paddle\pot-app-recognize-plugin-paddle\PaddleOCR-json_v.1.3.0.7z
-          pathTarget: D:\a\pot-app-recognize-plugin-paddle\pot-app-recognize-plugin-paddle\PPOCR
+          args: 7z x PaddleOCR-json_v.1.3.0.7z -o ./PPOCR -aoa
+
       - name: Rename
         run: move target/${{ matrix.target }}/release/plugin.dll ./plugin.dll
       - uses: vimtor/action-zip@v1

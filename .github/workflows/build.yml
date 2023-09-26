@@ -1,0 +1,165 @@
+name: Build
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      name: ${{ steps.getname.outputs.NAME }}
+      icon: ${{ steps.getname.outputs.ICON }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: check
+        run: cargo check --all --all-targets
+      - name: Install zip
+        run: sudo apt-get install -y zip jq
+      - id: getname
+        run: |
+          echo "NAME=$(cat info.json | jq '.id' | tr -d '"')" >> "$GITHUB_OUTPUT"
+          echo "ICON=$(cat info.json | jq '.icon' | tr -d '"')" >> "$GITHUB_OUTPUT"
+  build-for-windows:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+        target:
+          [
+            x86_64-pc-windows-msvc,
+            i686-pc-windows-msvc,
+            aarch64-pc-windows-msvc,
+          ]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: install toolchain
+        run: |
+          rustup target add ${{ matrix.target }}
+          rustup toolchain install --force-non-host stable-${{ matrix.target }}
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Rename
+        run: move target/${{ matrix.target }}/release/plugin.dll ./plugin.dll
+      - uses: vimtor/action-zip@v1
+        with:
+          files: info.json ${{needs.check.outputs.icon}} plugin.dll
+          dest: ${{needs.check.outputs.name}}.potext
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.target }}
+          path: "*.potext"
+          if-no-files-found: error
+      - name: Wrap
+        if: startsWith(github.ref, 'refs/tags')
+        uses: vimtor/action-zip@v1
+        with:
+          files: ${{needs.check.outputs.name}}.potext
+          dest: ${{ matrix.target }}.zip
+      - name: Upload Release
+        if: startsWith(github.ref, 'refs/tags')
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.TOKEN }}
+          files: ${{ matrix.target }}.zip
+  build-for-macos:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest]
+        target: [x86_64-apple-darwin, aarch64-apple-darwin]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Install Rust Stable
+        uses: dtolnay/rust-toolchain@stable
+      - name: install toolchain
+        run: |
+          rustup target add ${{ matrix.target }}
+          rustup toolchain install --force-non-host stable-${{ matrix.target }}
+      - name: Build
+        run: cargo build --release --target ${{ matrix.target }}
+      - name: Rename
+        run: sudo mv target/${{ matrix.target }}/release/libplugin.dylib ./plugin.dylib
+      - uses: vimtor/action-zip@v1
+        with:
+          files: info.json ${{needs.check.outputs.icon}} plugin.dylib
+          dest: ${{needs.check.outputs.name}}.potext
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.target }}
+          path: "*.potext"
+          if-no-files-found: error
+      - name: Wrap
+        if: startsWith(github.ref, 'refs/tags')
+        uses: vimtor/action-zip@v1
+        with:
+          files: ${{needs.check.outputs.name}}.potext
+          dest: ${{ matrix.target }}.zip
+      - name: Upload Release
+        if: startsWith(github.ref, 'refs/tags')
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.TOKEN }}
+          files: ${{ matrix.target }}.zip
+  build-for-linux:
+    needs: check
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [ubuntu-latest]
+        target:
+          [
+            x86_64-unknown-linux-gnu,
+            i686-unknown-linux-gnu,
+            aarch64-unknown-linux-gnu,
+            armv7-unknown-linux-gnueabihf,
+          ]
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+      - name: Build for Linux
+        uses: ./.github/build-for-linux
+        with:
+          target: ${{ matrix.target }}
+          toolchain: stable-${{ matrix.target }}
+      - uses: vimtor/action-zip@v1
+        with:
+          files: info.json ${{needs.check.outputs.icon}} plugin.so
+          dest: ${{needs.check.outputs.name}}.potext
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.target }}
+          path: "*.potext"
+          if-no-files-found: error
+      - name: Wrap
+        if: startsWith(github.ref, 'refs/tags')
+        uses: vimtor/action-zip@v1
+        with:
+          files: ${{needs.check.outputs.name}}.potext
+          dest: ${{ matrix.target }}.zip
+      - name: Upload Release
+        if: startsWith(github.ref, 'refs/tags')
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.TOKEN }}
+          files: ${{ matrix.target }}.zip

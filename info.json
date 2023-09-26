@@ -1,0 +1,32 @@
+{
+  "id": "[plugin].com.pot-app.ocrspace",
+  "plugin_type": "recognize",
+  "icon": "icon.png",
+  "display": "OCR Space",
+  "homepage": "https://github.com/pot-app/pot-app-recognize-plugin-template",
+  "needs": [{ "key": "apikey", "display": "Api Key" }],
+  "language": {
+    "auto": "",
+    "zh_cn": "",
+    "zh_tw": "",
+    "en": "",
+    "ja": "",
+    "ko": "",
+    "fr": "",
+    "es": "",
+    "ru": "",
+    "de": "",
+    "it": "",
+    "tr": "",
+    "pt_pt": "",
+    "pt_br": "",
+    "vi": "",
+    "id": "",
+    "th": "",
+    "ms": "",
+    "ar": "",
+    "hi": "",
+    "mn_cy": "",
+    "km": ""
+  }
+}

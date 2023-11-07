@@ -3,7 +3,7 @@
 ## 支持平台
 
 - [x] Windows
-  - [x] x64 [下载](https://ghproxy.com/https://github.com/pot-app/pot-app-recognize-plugin-paddle/releases/latest/download/x86_64-pc-windows-msvc.zip)
+  - [x] x64 [下载](https://gh.pylogmon.com/https://github.com/pot-app/pot-app-recognize-plugin-paddle/releases/latest/download/x86_64-pc-windows-msvc.zip)
   - [ ] x86
   - [ ] aarch64
 - [ ] Linux
